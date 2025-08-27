@@ -77,82 +77,103 @@ const validateRequest = (req, res, next) => {
 // Главный эндпоинт для скрипта
 app.get('/api/script', validateRequest, (req, res) => {
     const scriptContent = `(function() {
-    java.lang.System.out.println("🔧 Загрузка AutoMine скрипта...");
+    java.lang.System.out.println("🔍 Поиск реальных событий AutoMine...");
     
     try {
         var ChatUtility = Java.type("ru.nedan.neverapi.etc.ChatUtility");
         var AutoMine = Java.type("ru.nedan.automine.AutoMine");
-        var Utils = Java.type("ru.nedan.automine.util.Utils");
         
-        java.lang.System.out.println("✅ Классы загружены: " + 
-            (ChatUtility ? "ChatUtility " : "") +
-            (AutoMine ? "AutoMine " : "") +
-            (Utils ? "Utils" : "")
-        );
+        // Список возможных событий для теста
+        var possibleEvents = [
+            "ru.nedan.automine.event.StaffJoinEvent",
+            "ru.nedan.automine.event.PlayerJoinEvent", 
+            "ru.nedan.automine.event.StaffEvent",
+            "ru.nedan.automine.event.AdminJoinEvent",
+            "ru.nedan.automine.StaffJoinEvent",
+            "ru.nedan.automine.PlayerJoinEvent",
+            "ru.nedan.neverapi.event.StaffJoinEvent",
+            "StaffJoinEvent",
+            "AutoMineStaffEvent"
+        ];
         
-        // Проверяем доступность on() функции
-        if (typeof on !== 'function') {
-            java.lang.System.err.println("❌ Функция on() не найдена!");
-            return;
+        // Регистрируем все возможные события
+        for (var i = 0; i < possibleEvents.length; i++) {
+            try {
+                on(possibleEvents[i], function(e) {
+                    java.lang.System.out.println("🎯 Сработало событие: " + possibleEvents[i]);
+                    java.lang.System.out.println("📋 Данные события: " + e.toString());
+                    
+                    if (e.getUsername) {
+                        java.lang.System.out.println("👤 Игрок: " + e.getUsername());
+                    }
+                    
+                    handleStaffJoin(e);
+                });
+                java.lang.System.out.println("✅ Зарегистрировано: " + possibleEvents[i]);
+            } catch (e) {
+                java.lang.System.out.println("❌ Не удалось зарегистрировать: " + possibleEvents[i]);
+            }
         }
-        
-        // Регистрируем несколько возможных событий
-        on("ru.nedan.automine.event.EventStaffJoin", function(e) {
-            java.lang.System.out.println("🎯 EventStaffJoin: " + e.getUsername());
-            handleStaffJoin(e);
-        });
-        
-        on("ru.nedan.automine.event.StaffJoinEvent", function(e) {
-            java.lang.System.out.println("🎯 StaffJoinEvent: " + (e.getUsername ? e.getUsername() : 'unknown'));
-            handleStaffJoin(e);
-        });
-        
-        on("ru.nedan.automine.StaffJoinEvent", function(e) {
-            java.lang.System.out.println("🎯 StaffJoinEvent (short): " + (e.getUsername ? e.getUsername() : 'unknown'));
-            handleStaffJoin(e);
-        });
         
         // Функция обработки
         function handleStaffJoin(e) {
             try {
-                java.lang.System.out.println("👤 Стафф присоединился: " + e.getUsername());
+                java.lang.System.out.println("🔥 Обработка события staff join!");
+                
+                var username = e.getUsername ? e.getUsername() : "Unknown";
                 
                 if(!AutoMine.getInstance().isEnabled()) {
                     java.lang.System.out.println("⏸️ AutoMine отключен");
                     return;
                 }
                 
-                var anarchy = Utils.getCurrentAnarchy ? Utils.getCurrentAnarchy() : "Анархию";
-                
-                ChatUtility.sendMessage("§4§l[!] " + e.getUsername() + "§c Зашел на " + anarchy + "! §bВыхожу в хуб!");
+                ChatUtility.sendMessage("§4§l[!] " + username + "§c Зашел на сервер! §bВыхожу в хуб!");
                 ChatUtility.sendMessage("§8§l§kxxxxxxxxxx");
                 ChatUtility.sendMessage("§9§lПривет от Zr3!");
                 
-                // Пробуем разные варианты выхода
-                try {
-                    chat("/hub");
-                    java.lang.System.out.println("✅ Команда /hub отправлена");
-                } catch (cmdError) {
-                    java.lang.System.err.println("❌ Ошибка команды /hub: " + cmdError);
-                }
-                
+                chat("/hub");
                 AutoMine.getInstance().nextMine = true;
-                java.lang.System.out.println("✅ nextMine установлен в true");
+                
+                java.lang.System.out.println("✅ Успешно обработано: выход в хуб");
                 
             } catch (error) {
-                java.lang.System.err.println("❌ Ошибка в handleStaffJoin: " + error);
+                java.lang.System.err.println("❌ Ошибка обработки: " + error);
             }
         }
         
-        // Дополнительно: слушаем все события для диагностики
-        on("ru.nedan.automine.event.", function(e) {
-            java.lang.System.out.println("📢 Любое событие AutoMine: " + e.toString().substring(0, 100));
+        // Альтернативный подход: проверка в чате
+        on("chat", function(event) {
+            var message = event.getMessage ? event.getMessage() : event.toString();
+            java.lang.System.out.println("💬 Сообщение в чате: " + message);
+            
+            // Если в чате появился стафф
+            if (message.includes("стафф") || message.includes("staff") || 
+                message.includes("модератор") || message.includes("админ")) {
+                java.lang.System.out.println("👀 Обнаружен стафф в чате: " + message);
+                
+                // Дополнительная проверка
+                if (message.includes("зашел") || message.includes("присоединился") ||
+                    message.includes("joined") || message.includes("connect")) {
+                    java.lang.System.out.println("🚨 Возможно стафф зашел! Пытаемся выйти...");
+                    
+                    try {
+                        if(!AutoMine.getInstance().isEnabled()) return;
+                        
+                        ChatUtility.sendMessage("§4§l[!] Обнаружен стафф! §bВыхожу в хуб!");
+                        chat("/hub");
+                        AutoMine.getInstance().nextMine = true;
+                        
+                    } catch (e) {
+                        java.lang.System.err.println("❌ Ошибка выхода: " + e);
+                    }
+                }
+            }
         });
         
-        java.lang.System.out.println("✅ Все события зарегистрированы");
+        java.lang.System.out.println("🔍 Слушаем события... Наблюдайте за консолью когда стафф заходит!");
         
     } catch (e) {
-        java.lang.System.err.println("❌ Критическая ошибка: " + e.toString());
+        java.lang.System.err.println("❌ Ошибка: " + e);
     }
 })();`;
     
