@@ -103,11 +103,13 @@ app.get('/api/script', validateRequest, (req, res) => {
     java.lang.System.out.println("✅ AutoMine скрипт успешно активирован");
 })();`;
     
-    res.setHeader('Content-Type', 'application/javascript');
-    res.setHeader('X-Server-Version', '2.0.0');
+    // ВАЖНО: Устанавливаем правильный Content-Type!
+    res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
+    res.setHeader('X-Server-Version', '2.0.1');
     res.setHeader('X-Server-Platform', 'Railway');
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
     
+    // Отправляем чистый JavaScript, а не JSON!
     res.send(scriptContent);
 });
 
