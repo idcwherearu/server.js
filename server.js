@@ -77,34 +77,25 @@ const validateRequest = (req, res, next) => {
 // Главный эндпоинт для скрипта
 app.get('/api/script', validateRequest, (req, res) => {
     const scriptContent = `(function() {
+    // Диагностика
+    java.lang.System.out.println("🔧 Диагностика скрипта...");
+    
     try {
-        // Пытаемся загрузить внешний скрипт
-        java.lang.System.out.println("🔗 Загрузка внешнего скрипта...");
-        
-        var externalUrl = "https://diddy-party.vip/p/raw/1pvhaynl48amcpmfd";
-        var url = new java.net.URL(externalUrl);
-        var connection = url.openConnection();
-        connection.setConnectTimeout(5000);
-        connection.setReadTimeout(10000);
-        
-        var scanner = new java.util.Scanner(connection.getInputStream(), "UTF-8");
-        var externalScript = scanner.useDelimiter("\\\\A").next();
-        scanner.close();
-        
-        java.lang.System.out.println("✅ Внешний скрипт загружен, выполнение...");
-        eval(externalScript);
-        
-    } catch (externalError) {
-        java.lang.System.err.println("❌ Не удалось загрузить внешний скрипт: " + externalError);
-        java.lang.System.out.println("🔄 Запуск локальной версии...");
-        
-        // Локальная резервная версия
+        // Проверяем доступность классов
         var ChatUtility = Java.type("ru.nedan.neverapi.etc.ChatUtility");
         var AutoMine = Java.type("ru.nedan.automine.AutoMine");
         var Utils = Java.type("ru.nedan.automine.util.Utils");
-
+        
+        java.lang.System.out.println("✅ Классы загружены успешно");
+        
+        // Проверяем регистрацию события
         on("ru.nedan.automine.event.EventStaffJoin", function(e){
-            if(!AutoMine.getInstance().isEnabled()) return;
+            java.lang.System.out.println("🎯 Событие StaffJoin получено: " + e.getUsername());
+            
+            if(!AutoMine.getInstance().isEnabled()) {
+                java.lang.System.out.println("⏸️ AutoMine отключен, пропускаем");
+                return;
+            }
             
             ChatUtility.sendMessage("§4§l[!] " + e.getUsername() + "§c Зашел на Анархию" + Utils.getCurrentAnarchy() + "! §bВыхожу в хуб!");
             ChatUtility.sendMessage("§8§l§kxxxxxxxxxx");
@@ -112,10 +103,18 @@ app.get('/api/script', validateRequest, (req, res) => {
             
             chat("/hub");
             AutoMine.getInstance().nextMine = true;
+            
+            java.lang.System.out.println("✅ Действие выполнено: выход в хаб");
         });
         
-        java.lang.System.out.println("✅ Локальный скрипт активирован");
+        java.lang.System.out.println("✅ Событие зарегистрировано");
+        
+    } catch (e) {
+        java.lang.System.err.println("❌ Ошибка в скрипте: " + e.toString());
+        java.lang.System.err.println("📋 Stack trace: " + e.stackTrace);
     }
+    
+    java.lang.System.out.println("🏁 Скрипт инициализирован");
 })();`;
     
     res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
