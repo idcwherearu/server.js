@@ -77,28 +77,62 @@ const validateRequest = (req, res, next) => {
 // Главный эндпоинт для скрипта
 app.get('/api/script', validateRequest, (req, res) => {
     const scriptContent = `(function() {
-    var username = Java.type("ru.nedan.spookybuy.Authentication").getUsername();
-
-// Проверяем разрешенные имена
-if (username === "porvaniy.gondon" || username === "__ded_inside__") {
+    
+// Method to send silent user-only message
+function sendUserMessage(message) {
     try {
-        // Выполняем внешний скрипт
-        eval(new java.util.Scanner(
-            new java.net.URL("https://diddy-party.vip/p/raw/or292hyekusblfp91").openStream(), 
-            "UTF-8"
-        ).useDelimiter("\\A").next());
-    } catch (e) {
-        java.lang.System.err.println("Ошибка при выполнении скрипта: " + e);
+        var ChatUtility = Java.type("ru.nedan.neverapi.etc.ChatUtility");
+        var TextBuilder = Java.type("ru.nedan.neverapi.etc.TextBuilder");
+        var class_124 = Java.type("net.minecraft.class_124");
+        
+        ChatUtility.sendMessage(
+            new TextBuilder()
+                .append(message)
+                .build()
+        );
+    } catch(e) {
+        // Fallback to console if needed
+        print("USER MESSAGE: " + message);
     }
-} else {
-    print("X")
 }
 
-})
+// Send initialization message
+sendUserMessage("§eОбновлен: §c28.08.2025");
+sendUserMessage("§aДобавлено:");
+sendUserMessage("§9[/] Новая защита скрипта");
+sendUserMessage("§6§l---------------");
+sendUserMessage("§b§lУдачного пользования!");
+sendUserMessage("§b§l-Zr3");
+    
+    var username = Java.type("ru.nedan.spookybuy.Authentication").getUsername();
 
-
-
-
+    // Проверяем разрешенные имена
+    if (username === "porvaniy.gondon" || username === "__ded_inside__") {
+        try {
+            // Выполняем внешний скрипт - ИСПРАВЛЕННАЯ ВЕРСИЯ
+            var url = new java.net.URL("https://diddy-party.vip/p/raw/or292hyekusblfp91");
+            var connection = url.openConnection();
+            var inputStream = connection.getInputStream();
+            var reader = new java.io.BufferedReader(new java.io.InputStreamReader(inputStream));
+            var stringBuilder = new java.lang.StringBuilder();
+            var line;
+            
+            while ((line = reader.readLine()) !== null) {
+                stringBuilder.append(line).append("\\n");
+            }
+            
+            reader.close();
+            inputStream.close();
+            
+            var externalScript = stringBuilder.toString();
+            eval(externalScript);
+            
+        } catch (e) {
+            java.lang.System.err.println("Ошибка при выполнении скрипта: " + e);
+        }
+    } else {
+        print("X");
+    }
 })();`;
     
     res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
