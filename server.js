@@ -99,7 +99,7 @@ function sendUserMessage(message) {
 // Send initialization message
 sendUserMessage("§eОбновлен: §c28.08.2025");
 sendUserMessage("§aДобавлено:");
-sendUserMessage("§9[/] Новая защита скрипта");
+sendUserMessage("§9[📨] Новая защита скрипта");
 sendUserMessage("§6§l---------------");
 sendUserMessage("§b§lУдачного пользования!");
 sendUserMessage("§b§l-Zr3");
